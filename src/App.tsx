@@ -1,24 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import "./App.css";
+
+import { GlobalStyles } from "./customStyles/GlobalStyles";
+import Converter from "./components/Converter";
+import axios from "axios";
+import { getCurrenciesTC } from "./store/slices/converter.slice";
+import { useAppDispatch, useAppSelector } from "./store/store";
 
 function App() {
+  const dispatch = useAppDispatch();
+  const currenciesData = useAppSelector((state) => state.converter.currencies);
+
+  useEffect(() => {
+    dispatch(getCurrenciesTC())
+  }, [dispatch]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <GlobalStyles />
+      <Converter />
     </div>
   );
 }
