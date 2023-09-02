@@ -1,55 +1,72 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import CurrencyInput from "./CurrencyInput";
 import CurrencySelect from "./CurrencySelect";
-import { currencyService } from "../utils/currencyService";
-import { cryptoCurrencies } from "../constants/currencies";
-import { cutBrackets } from "../utils/cutBrackets";
-import axios from "axios";
 import { useAppDispatch, useAppSelector } from "../store/store";
-import { getCurrenciesTC } from "../store/slices/converter.slice";
+import { converterActions } from "../store/slices/converter.slice";
 
-const Converter: React.FC = () => {
+const Converter = () => {
   const dispatch = useAppDispatch();
   const currenciesData = useAppSelector((state) => state.converter.currencies);
+  const baseCurrency = useAppSelector((state) => state.converter.baseCurrency);
+  const targetCurrency = useAppSelector(
+    (state) => state.converter.targetCurrency
+  );
 
-
-
-  const [amount, setAmount] = useState(1);
-  const [baseCurrency, setBaseCurrency] = useState(currenciesData[0]);
-  const [targetCurrency, setTargetCurrency] = useState("Bitcoin (BTC)+ ⚡");
-  const [exchangeRate, setExchangeRate] = useState(0);
-
-  const handleBaseCurrencyChange = (currency: string) => {
-    setBaseCurrency(currency);
+  const [exchangeInputValue, setExchangeInputValue] = useState(0);
+  const exchangeInputSetter = (value: number) => {
+    setExchangeInputValue(value);
   };
 
-  const handleTargetCurrencyChange = (currency: string) => {
-    setTargetCurrency(currency);
+  const getAvailableBaseExchangeValue = () => {
+    let arrayOfValues = [];
+    for (const key in currenciesData) {
+      arrayOfValues.push(key);
+    }
+    return arrayOfValues;
   };
 
-  const handleAmountChange = (value: number) => {
-    setAmount(value);
+  const getAvailableTargetExchangeValue = () => {
+    let arrayOfValues = [];
+    for (const key in currenciesData[baseCurrency]) {
+      arrayOfValues.push(key);
+    }
+    return arrayOfValues;
   };
 
-  const convertedAmount = amount * exchangeRate;
+  const setBaseCurrency = (value: string) => {
+    dispatch(converterActions.setBaseCurrency({ baseCurrency: value }));
+  };
+  const setTargetCurrency = (value: string) => {
+    dispatch(converterActions.setTargetCurrency({ targetCurrency: value }));
+  };
+
+  const targetExchangeValue = Number(currenciesData[baseCurrency][targetCurrency]) * exchangeInputValue
+
+
 
   return (
     <div>
-      <h2>Currency Converter</h2>
-      <CurrencyInput value={amount} onChange={handleAmountChange} />
+      <CurrencyInput
+        value={exchangeInputValue}
+        onChange={exchangeInputSetter}
+      />
+
       <CurrencySelect
         value={baseCurrency}
-        options={cryptoCurrencies}
-        onChange={handleBaseCurrencyChange}
+        options={getAvailableBaseExchangeValue()}
+        onChange={setBaseCurrency}
       />
       <CurrencySelect
         value={targetCurrency}
-        options={cryptoCurrencies}
-        onChange={handleTargetCurrencyChange}
+        options={getAvailableTargetExchangeValue()}
+        onChange={setTargetCurrency}
       />
-      <p>
-        {amount} {baseCurrency} = {convertedAmount} {targetCurrency}
-      </p>
+
+      <div>
+        <p style={{color: "white"}}>
+          {exchangeInputValue} {baseCurrency} = {targetExchangeValue} {targetCurrency}
+        </p>
+      </div>
     </div>
   );
 };

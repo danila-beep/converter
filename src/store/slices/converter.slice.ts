@@ -1,8 +1,11 @@
 import { Dispatch, PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { currencyService } from "../../utils/currencyService";
+import { appActions } from "./app.slice";
 
 const initialState: InitialStateType = {
     currencies: {},
+    baseCurrency: "BTC",
+    targetCurrency: "USD",
     isFetching: true
 }
 
@@ -11,8 +14,14 @@ const slice = createSlice({
     initialState,
     reducers: {
         setCurrencies: (state, action: PayloadAction<CurrencyRates>) => {
-            return {currencies: action.payload, isFetching: false}
-        }
+            return {...state, currencies: action.payload, isFetching: false}
+        },
+        setBaseCurrency: (state, action: PayloadAction<{baseCurrency: string}>) => {
+            state.baseCurrency = action.payload.baseCurrency
+        },
+        setTargetCurrency: (state, action: PayloadAction<{targetCurrency: string}>) => {
+            state.targetCurrency = action.payload.targetCurrency
+        },
     }
 })
 
@@ -22,7 +31,11 @@ export const converterActions = slice.actions
 export const getCurrenciesTC = () => (dispatch: Dispatch) => {
     currencyService.getCurrencies()
         .then(res => {
-            converterActions.setCurrencies(res.data)
+            dispatch(converterActions.setCurrencies(res.data))
+            dispatch(appActions.setAppInitialized())
+        })
+        .catch(e => {
+            console.log(e.message);
         })
 }
 
@@ -35,5 +48,7 @@ type CurrencyRates = {
 
 type InitialStateType = {
     currencies: CurrencyRates,
-    isFetching: boolean
+    baseCurrency: string,
+    targetCurrency: string,
+    isFetching: boolean,
 }

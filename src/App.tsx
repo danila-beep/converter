@@ -1,24 +1,42 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./App.css";
+import { BgPatternWrapper } from "customStyles/bgPattern";
+import Header from "components/Header";
+import HomePage from "pages/HomePage/HomePage";
 
-import { GlobalStyles } from "./customStyles/GlobalStyles";
-import Converter from "./components/Converter";
-import axios from "axios";
-import { getCurrenciesTC } from "./store/slices/converter.slice";
-import { useAppDispatch, useAppSelector } from "./store/store";
 
 function App() {
-  const dispatch = useAppDispatch();
-  const currenciesData = useAppSelector((state) => state.converter.currencies);
+  // const dispatch = useAppDispatch();
+  // const isAppInitialized = useAppSelector(
+  //   (state) => state.app.isAppInitialized
+  // );
 
-  useEffect(() => {
-    dispatch(getCurrenciesTC())
-  }, [dispatch]);
+  console.log("App rerender");
+
+  // useEffect(() => {
+  //   dispatch(getCurrenciesTC());
+  // }, [dispatch]);
+
+  // const renderApp = () => {
+  //   if (isAppInitialized) {
+  //     return (
+  //       <React.Fragment>
+  //         <Converter />
+  //       </React.Fragment>
+  //     );
+  //   } else {
+  //     return (
+  //       <React.Fragment>
+  //         <Preloader />
+  //       </React.Fragment>
+  //     );
+  //   }
+  // };
 
   return (
     <div className="App">
-      <GlobalStyles />
-      <Converter />
+      <Header />
+      <HomePage />
     </div>
   );
 }
